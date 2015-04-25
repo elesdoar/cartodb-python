@@ -28,6 +28,7 @@ import urlparse
 import oauth2 as oauth
 import urllib
 import httplib2
+import certifi
 
 try:
     import json
@@ -70,9 +71,9 @@ class CartoDBBase(object):
         # depending on query size do a POST or GET
         if len(sql) < self.MAX_GET_QUERY_LEN and not do_post:
             url = url + '?' + p
-            resp, content = self.req(url);
+            resp, content = self.req(url)
         else:
-            resp, content = self.req(url, 'POST', body=p);
+            resp, content = self.req(url, 'POST', body=p)
 
         if resp['status'] == '200':
             if parse_json:
@@ -86,7 +87,6 @@ class CartoDBBase(object):
             raise CartoDBException('internal server error')
         else:
             raise CartoDBException('Unknown error occurred')
-
 
         return None
 
@@ -119,7 +119,6 @@ class CartoDBOAuth(CartoDBBase):
         # prepare client
         self.client = oauth.Client(consumer, token)
 
-
     def req(self, url, http_method="GET", http_headers=None, body=''):
         """ make an autorized request """
         resp, content = self.client.request(
@@ -140,14 +139,12 @@ class CartoDBAPIKey(CartoDBBase):
     def __init__(self, api_key, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None, *args, **kwargs):
         super(CartoDBAPIKey, self).__init__(cartodb_domain, host, protocol, *args, **kwargs)
         self.api_key = api_key
-        
-        import certifi
-        certificate_location =  certifi.where()
+
+        certificate_location = certifi.where()
         self.client = httplib2.Http(ca_certs=certificate_location)
 
         if protocol != 'https':
             warnings.warn("you are using API key auth method with http")
-
 
     def req(self, url, http_method="GET", http_headers={}, body=''):
         api_key_param = 'api_key=' + self.api_key

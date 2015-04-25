@@ -3,13 +3,14 @@ from cartodb import CartoDBOAuth as CartoDB, CartoDBException, CartoDBAPIKey
 
 from secret import *
 
+
 class CartoDBClientTest(object):
 
     def test_sql_error(self):
         self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table')
 
     def test_sql_error_get(self):
-        self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table', { 'do_post':False})
+        self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table', {'do_post': False})
 
     def test_sql(self, do_post=True):
         data = self.client.sql('select * from ' + EXISTING_TABLE, do_post=do_post)
@@ -28,10 +29,12 @@ class CartoDBClientTestOAuth(CartoDBClientTest, unittest.TestCase):
     def setUp(self):
         self.client = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, user)
 
+
 class CartoDBClientTestApiKey(CartoDBClientTest, unittest.TestCase):
 
     def setUp(self):
         self.client = CartoDBAPIKey(API_KEY, user)
+
 
 class CartoDBClientTestApiKeyV2(CartoDBClientTest, unittest.TestCase):
 
@@ -41,4 +44,3 @@ class CartoDBClientTestApiKeyV2(CartoDBClientTest, unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
